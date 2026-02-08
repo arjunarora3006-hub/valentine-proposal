@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white; /* Changed to white background */
+            color: black; /* Changed text color to black for visibility on white background */
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            /* Removed flex-wrap: wrap to keep buttons side by side */
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #yesBtn {
+            background-color: #ff69b4;
+            color: white;
+            font-size: 2em; /* Starts larger */
+        }
+        #noBtn {
+            background-color: #ff4500;
+            color: white;
+            position: absolute; /* Allows floating */
+        }
+        #message {
+            font-size: 1.2em;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #message.show {
+            opacity: 1;
+        }
+        /* Responsive adjustments - removed flex-direction: column to keep buttons side by side */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            button { font-size: 1.2em; padding: 10px 20px; }
+            .buttons { gap: 10px; } /* Reduced gap for smaller screens, but kept in row */
+        }
+    </style>
+</head>
+<body>
+    <h1>Will You Be My Valentine, Epi?</h1>
+    <div class="buttons">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+    <div id="message"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const messageDiv = document.getElementById('message');
+        let noAttempts = 0;
+        let yesSize = 2; // Initial font size multiplier for Yes button
+
+        // Function to move No button away from cursor
+        function moveNoButton(event) {
+            const rect = noBtn.getBoundingClientRect();
+            const mouseX = event.clientX || event.touches[0].clientX;
+            const mouseY = event.clientY || event.touches[0].clientY;
+            const btnCenterX = rect.left + rect.width / 2;
+            const btnCenterY = rect.top + rect.height / 2;
+            const distance = Math.sqrt((mouseX - btnCenterX) ** 2 + (mouseY - btnCenterY) ** 2);
+
+            if (distance < 100) { // If cursor is close, move button
+                const newX = Math.random() * (window.innerWidth - rect.width);
+                const newY = Math.random() * (window.innerHeight - rect.height);
+                noBtn.style.left = `${newX}px`;
+                noBtn.style.top = `${newY}px`;
+
+                noAttempts++;
+                if (noAttempts === 1) {
+                    messageDiv.textContent = "You can do better than this Epi";
+                    messageDiv.classList.add('show');
+                } else if (noAttempts === 2) {
+                    messageDiv.textContent = "Seriously? Just say yes :P";
+                    messageDiv.classList.add('show');
+                }
+
+                // Grow Yes button
+                yesSize += 0.2;
+                yesBtn.style.fontSize = `${yesSize}em`;
+            }
+        }
+
+        // Event listeners for mouse and touch
+        document.addEventListener('mousemove', moveNoButton);
+        document.addEventListener('touchmove', moveNoButton);
+
+        // Yes button click
+        yesBtn.addEventListener('click', () => {
+            messageDiv.textContent = "I love you Epi, cannot wait to see you";
+            messageDiv.classList.add('show');
+            // Trigger fireworks
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            // Hide buttons after yes
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
